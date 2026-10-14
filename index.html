@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ตารางงานรายเดือน</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#b4532a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ตารางงาน">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ee;--card:#fff;--tx:#2b2620;--mu:#7a7167;--bd:#e4ddd2;--ac:#b4532a;--acx:#fff;--in:#faf7f2;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1915;--card:#27231e;--tx:#f0ebe3;--mu:#a39a8e;--bd:#3a342c;--ac:#e0825a;--acx:#1c1915;--in:#1f1b17}}
+:root[data-theme="dark"]{--bg:#1c1915;--card:#27231e;--tx:#f0ebe3;--mu:#a39a8e;--bd:#3a342c;--ac:#e0825a;--acx:#1c1915;--in:#1f1b17}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:'Sarabun',system-ui,sans-serif;font-size:15px}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:0 0 12px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.mon{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:4px}
+.mon b{min-width:130px;text-align:center}
+button,select,input,textarea{font:inherit;color:var(--tx)}
+button{border:1px solid var(--bd);background:var(--card);border-radius:10px;padding:8px 12px;cursor:pointer}
+button.p{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
+button.g{border:0;background:none;padding:6px 10px}
+input,select,textarea{width:100%;background:var(--in);border:1px solid var(--bd);border-radius:10px;padding:9px 10px}
+.bar input,.bar select{width:auto;flex:1;min-width:130px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.tab{position:relative;background:var(--card);border:2px solid var(--bd);border-radius:16px;padding:18px 8px 14px;text-align:center;cursor:pointer;min-height:96px}
+.tab b{display:block;font-size:19px;margin:4px 0 2px}.tab small{color:var(--mu)}.tab .ic{font-size:26px}
+.tab.on{background:var(--ac);border-color:var(--ac);color:var(--acx)}.tab.on small{color:var(--acx);opacity:.85}
+.tab .rn{position:absolute;top:4px;right:6px;font-size:13px;padding:4px;opacity:.8}
+@media(max-width:700px){.tab b{font-size:15px}.tab{padding:14px 4px 10px}}
+.stats{display:flex;gap:8px;margin-bottom:12px}
+.stat{flex:1;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px}
+.stat span{display:block;color:var(--mu);font-size:12px}.stat b{font-size:20px}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:14px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--bd)}
+th{font-size:12px;color:var(--mu);background:var(--in);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.empty{padding:36px;text-align:center;color:var(--mu)}
+.act{white-space:nowrap}
+dialog{border:1px solid var(--bd);border-radius:16px;background:var(--card);color:var(--tx);width:min(560px,94vw);padding:18px;max-height:90vh}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.f{display:grid;grid-template-columns:1fr 1fr;gap:10px}.f .w{grid-column:1/-1}
+label{font-size:12px;color:var(--mu);display:block;margin-bottom:3px}
+@media(max-width:700px){
+.mw table,.mw tbody,.mw tr,.mw td{display:block}.mw thead{display:none}
+.mw tr{padding:12px;border-bottom:1px solid var(--bd)}.mw td{border:0;padding:3px 0}
+.mw td[data-l]::before{content:attr(data-l)": ";color:var(--mu);font-size:12px}
+.mw td.n{font-weight:700}.f{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>📅 ตารางงานรายเดือน</h1>
+<div class="bar">
+ <div class="mon"><button class="g" id="pv">‹</button><b id="ml"></b><button class="g" id="nx">›</button></div>
+ <input id="q" placeholder="ค้นหา...">
+ <button class="p" id="add">+ เพิ่มงาน</button>
+ <button id="bk" title="สำรองข้อมูล">💾 สำรอง</button>
+ <button id="rs" title="กู้คืนข้อมูล">📂 กู้คืน</button>
+ <input type="file" id="rf" accept=".json,application/json" hidden>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="stats"><div class="stat"><span>จำนวนงาน</span><b id="s1">0</b></div><div class="stat"><span>แขกรวม</span><b id="s2">0</b></div></div>
+<div class="tw mw" id="tw"></div>
+</div>
+
+<dialog id="dl">
+<h3 id="dt" style="margin:0 0 12px">เพิ่มงาน</h3>
+<div class="f">
+ <div class="w"><label>ชื่องาน</label><input id="name"></div>
+ <div><label>วันที่</label><input type="date" id="date"></div>
+ <div><label>เวลา</label><input id="time" placeholder="เช่น 18:00-21:00"></div>
+ <div class="w"><label>สถานที่</label><input id="place"></div>
+ <div class="w"><label>รายละเอียดงาน</label><textarea id="detail" rows="2"></textarea></div>
+ <div class="w"><label>รายการอาหาร</label><textarea id="menu" rows="2"></textarea></div>
+ <div><label>จำนวนแขก</label><input type="number" min="0" id="guests"></div>
+ <div><label>หัวหน้าชุด</label><input id="leader"></div>
+ <div class="w"><label>ประเภทของงาน</label><select id="type"></select></div>
+</div>
+<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+ <button id="cx">ยกเลิก</button><button class="p" id="sv">บันทึก</button>
+</div>
+</dialog>
+
+<dialog id="rd" style="width:min(380px,94vw)">
+<h3 style="margin:0 0 12px">แก้ไขชื่อหัวข้อ</h3>
+<input id="rv">
+<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button id="rcx">ยกเลิก</button><button class="p" id="rok">บันทึก</button></div>
+</dialog>
+
+<dialog id="dd" style="width:min(380px,94vw)">
+<h3 style="margin:0 0 8px">ยืนยันการลบ</h3>
+<div id="dm" style="color:var(--mu)"></div>
+<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button id="dcx">ยกเลิก</button><button class="p" id="dok">ลบ</button></div>
+</dialog>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY='sched_v1';
+let S={ev:[],cats:['งานหอประชุม','งานหลวง','งานนอก'],v2:1};
+try{const r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){}
+if(!S.v2){S.cats=['งานหอประชุม','งานหลวง','งานนอก'];S.ev.forEach(e=>e.type=0);S.v2=1}
+let cur=0;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const now=new Date();let ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+const MN=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const col=t=>{const h=(S.cats.indexOf(t)+1)*67%360;return `background:hsl(${h} 60% 50%/.18);color:hsl(${h} 55% 38%)`};
+let edit=null;
+
+const IC=['🏛️','👑','🚐'];
+function fillCats(){
+ $('type').innerHTML=S.cats.map((c,i)=>`<option value="${i}">${esc(c)}</option>`).join('');
+ $('tabs').innerHTML=S.cats.map((c,i)=>{const n=S.ev.filter(e=>e.date.startsWith(ym)&&+e.type===i).length;return `<div class="tab${i===cur?' on':''}" onclick="pick(${i})"><span class="rn" title="เปลี่ยนชื่อหัวข้อ" onclick="ren(event,${i})">✏️</span><div class="ic">${IC[i]||'📁'}</div><b>${esc(c)}</b><small>${n} งาน</small></div>`}).join('');
+}
+function pick(i){cur=i;render()}
+let rIdx=0,dId=null;
+function ren(ev,i){ev.stopPropagation();rIdx=i;$('rv').value=S.cats[i];$('rd').showModal();$('rv').focus()}
+$('rcx').onclick=()=>$('rd').close();
+$('rok').onclick=()=>{const n=$('rv').value.trim();if(n){S.cats[rIdx]=n;save();render()}$('rd').close()};
+$('rv').onkeydown=e=>{if(e.key==='Enter')$('rok').click()};
+function render(){
+ const [y,m]=ym.split('-');$('ml').textContent=MN[+m-1]+' '+(+y+543);
+ fillCats();const t=String(cur),q=$('q').value.trim().toLowerCase();
+ const L=S.ev.filter(e=>e.date.startsWith(ym)&&String(e.type)===t&&(!q||JSON.stringify(e).toLowerCase().includes(q)))
+  .sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+ $('s1').textContent=L.length;$('s2').textContent=L.reduce((a,e)=>a+(+e.guests||0),0);
+ if(!L.length){$('tw').innerHTML='<div class="empty">ยังไม่มีงานในเดือนนี้ กด “+ เพิ่มงาน”</div>';return}
+ $('tw').innerHTML='<table><thead><tr><th>ลำดับ</th><th>ชื่องาน</th><th>วันที่/เวลา</th><th>สถานที่</th><th>รายละเอียดงาน</th><th>รายการอาหาร</th><th>แขก</th><th>หัวหน้าชุด</th><th></th></tr></thead><tbody>'+
+ L.map((e,i)=>{const d=+e.date.slice(8);return `<tr><td class="n" data-l="ลำดับ">${i+1}</td><td><b>${esc(e.name)}</b></td><td data-l="วันที่">${d} ${MN[+m-1].slice(0,3)}.<br>${esc(e.time)}</td><td data-l="สถานที่">${esc(e.place)}</td><td data-l="รายละเอียด">${esc(e.detail)}</td><td data-l="อาหาร">${esc(e.menu)}</td><td data-l="แขก">${esc(e.guests)}</td><td data-l="หัวหน้าชุด">${esc(e.leader)}</td><td class="act"><button class="g" onclick="op('${e.id}')">✏️</button><button class="g" onclick="del('${e.id}')">🗑️</button></td></tr>`}).join('')+'</tbody></table>';
+}
+const F=['name','date','time','place','detail','menu','guests','leader','type'];
+function op(id){
+ edit=id;const e=S.ev.find(x=>x.id===id)||{date:ym+'-'+String(now.getDate()).padStart(2,'0'),type:cur};
+ if(!id&&!e.date.startsWith(ym))e.date=ym+'-01';
+ F.forEach(k=>$(k).value=e[k]??'');$('dt').textContent=id?'แก้ไขงาน':'เพิ่มงาน';$('dl').showModal();
+}
+function del(id){const e=S.ev.find(x=>x.id===id);if(!e)return;dId=id;$('dm').textContent='ลบงาน “'+e.name+'” ใช่หรือไม่?';$('dd').showModal()}
+$('dcx').onclick=()=>$('dd').close();
+$('dok').onclick=()=>{S.ev=S.ev.filter(e=>e.id!==dId);save();$('dd').close();render()};
+$('add').onclick=()=>op(null);
+$('cx').onclick=()=>$('dl').close();
+$('sv').onclick=()=>{
+ if(!$('name').value.trim()||!$('date').value){$('dt').textContent='⚠️ กรุณากรอกชื่องานและวันที่';return}
+ const o={};F.forEach(k=>o[k]=$(k).value.trim());o.type=+o.type;cur=o.type;
+ if(edit)Object.assign(S.ev.find(x=>x.id===edit),o);else S.ev.push({id:Date.now().toString(36),...o});
+ ym=o.date.slice(0,7);save();$('dl').close();render();
+};
+const shift=n=>{let [y,m]=ym.split('-').map(Number);m+=n;if(m<1){m=12;y--}if(m>12){m=1;y++}ym=y+'-'+String(m).padStart(2,'0');render()};
+$('pv').onclick=()=>shift(-1);$('nx').onclick=()=>shift(1);
+$('q').oninput=render;
+fillCats();render();
+$('bk').onclick=()=>{try{const b=new Blob([JSON.stringify(S)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='schedule-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove()}catch(e){}};
+$('rs').onclick=()=>$('rf').click();
+$('rf').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(Array.isArray(d.ev)&&Array.isArray(d.cats)){S=d;S.v2=1;save();render()}}catch(x){}};r.readAsText(f);e.target.value=''};
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
